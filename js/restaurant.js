@@ -15,7 +15,9 @@ Restaurant.prototype.reservarHorario = function(horarioAReservar) {
 }  
 
 Restaurant.prototype.calificar = function(nuevaCalificacion) {
-    if (Number.isInteger(nuevaCalificacion) && nuevaCalificacion > 0 && nuevaCalificacion < 10) {
+    //Se incluye kla opcion de recibitr calificacion 10, que es normal en este tipo de aplicacones 
+    //ya que 9,9 no suele ser la calificacion mas alta que se le viene a unsuario a la mente a la hora de calificar ;
+    if (Number.isInteger(nuevaCalificacion) && nuevaCalificacion > 0 && nuevaCalificacion <= 10) {
         this.calificaciones.push(nuevaCalificacion);
     }
 }
