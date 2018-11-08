@@ -21,7 +21,6 @@ describe('Prueba funcion reservarHorario', function(){
 	})
 })
 
-
 describe('Prueba funcion obtenerPuntuacion()', function(){
 	it('La puntuación (que es el promedio de ellas) se calcula correctamente',function(){
         var calificaciones = restauranteDePrueba.calificaciones;
@@ -108,6 +107,64 @@ describe('Prueba funcion obtenerRestaurantes()', function(){
     it('La funcion regresa objeto vacio cuando no se establece ningun criterio',function(){
         expect(listadoDePueba.obtenerRestaurantes()).to.be.an("array")
         .that.is.empty;
+    })
+})
+
+describe('Prueba objeto Reserva', function(){
+    
+    it('Se crea un objeto literal Reserva con los atributos requeridos ',function(){
+        let laReserva = new Reserva();
+        expect(laReserva).to.be.an("object")
+        .that.have.all.keys("horario","cantidadDePersonas","precioPorPersona","codigoDeDescuento")
+    })
+
+    it('Se crea una reserva con tipos de datos correctos ',function(){
+        let horarioDeReserva = new Date(2019, 0, 1, 14, 30);
+        let laReserva = new Reserva(horarioDeReserva,2,15,"codigo");
+        expect(laReserva).to.that.have.all.keys({horario: horarioDeReserva, cantidadDePersonas:2, precioPorPersona:15, codigoDeDescuento:"codigo"})
+        expect(laReserva.horario).to.be.a("date");
+        expect(laReserva.cantidadDePersonas).to.be.a("number");
+        expect(laReserva.precioPorPersona).to.be.a("number");
+        expect(laReserva.codigoDeDescuento).to.be.a("string");
+   })
+
+}) 
+
+describe('Funcion calcular precios de Reserva', function(){
+
+    it('Se calcula precio base correctamente',function(){
+        let horarioDeReserva = new Date(2019, 0, 1, 15, 30);
+        let laReserva = new Reserva(horarioDeReserva,2,15,"codigo");
+        expect(laReserva.calcularPrecioBase()).eql(30)
+    })
+
+    it('Se calcula precio total correctamente con cupones de descuento',function(){
+        let horarioDeReserva = new Date(2019, 0, 1, 14, 30);
+        let laReserva = new Reserva(horarioDeReserva,2,15,"DES15");
+        expect(laReserva.calcularPrecioTotal(laReserva)).eql(25.5)
+        laReserva.codigoDeDescuento = "DES200";
+        expect(laReserva.calcularPrecioTotal(laReserva)).eql(-170)
+        laReserva.codigoDeDescuento = "DES1";
+        expect(laReserva.calcularPrecioTotal(laReserva)).eql(15)
+    })
+
+
+    it('Se calcula precio total correctamente con descuento por volumen',function(){
+        let horarioDeReserva = new Date(2019, 0, 1, 14, 30);
+        let laReserva = new Reserva(horarioDeReserva,2,15);
+        expect(laReserva.calcularPrecioTotal(laReserva)).eql(15*2*1)
+        laReserva.cantidadDePersonas = 5;
+        expect(laReserva.calcularPrecioTotal(laReserva)).eql(15*5*0.95)
+        laReserva.cantidadDePersonas = 7;
+        expect(laReserva.calcularPrecioTotal(laReserva)).eql(15*7*0.9)
+        laReserva.cantidadDePersonas = 10;
+        expect(laReserva.calcularPrecioTotal(laReserva)).eql(15*10*0.85)
+    })
+
+    it('Se calcula precio total correctamente con cupones de descuento y volumen',function(){
+        let horarioDeReserva = new Date(2019, 0, 1, 14, 30);
+        let laReserva = new Reserva(horarioDeReserva,20,15,"DES200");
+        expect(laReserva.calcularPrecioTotal(laReserva)).eql((20*15*0.85)-200)
     })
 
 })
